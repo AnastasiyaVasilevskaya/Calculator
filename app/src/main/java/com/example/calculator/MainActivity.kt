@@ -69,8 +69,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onNumberClick(number: String) {
-        val currentText = binding.operationDisplay.text.toString()
-        if (number == "." && currentText.contains(".")) {
+        if (number == ".") {
             val currentText = binding.operationDisplay.text.toString()
             if (currentText.isNotEmpty() && !currentText.last().toString()
                     .isOperator() && !currentText.endsWith(".")
@@ -89,9 +88,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onEqualClick() {
-        if (binding.operationDisplay.text.toString().last().toString().isOperator()) {
-            null
-        } else calculateResult()
+        try {
+            calculateResult()
+        }catch (e:Exception) {
+            binding.resultDisplay.text = "Error"
+        }
     }
 
     private fun onClearClick() {
