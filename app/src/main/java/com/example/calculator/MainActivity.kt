@@ -25,7 +25,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ActivityMainBinding.setNumberButtonListener() {
-        val numberButtons = listOf(button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, buttonDot)
+        val numberButtons = listOf(
+            button0,
+            button1,
+            button2,
+            button3,
+            button4,
+            button5,
+            button6,
+            button7,
+            button8,
+            button9,
+            buttonDot
+        )
 
         for (button in numberButtons) {
             button.setOnClickListener {
@@ -90,7 +102,7 @@ class MainActivity : AppCompatActivity() {
     private fun onEqualClick() {
         try {
             calculateResult()
-        }catch (e:Exception) {
+        } catch (e: Exception) {
             binding.resultDisplay.text = "Error"
         }
     }
@@ -111,28 +123,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onChangeSignClick() {
+        val operators = setOf('+', '-', '×', '÷')
         var currentText = binding.operationDisplay.text.toString()
         if (currentText.isEmpty() || currentText == "0") return
 
+        val lastIndexOperator = currentText.indexOfLast { it in operators }
+
         // Индекс первой цифры последнего числа
-        val lastIndex = currentText.indexOfLast { it.isDigit() }
-
-        // Если найдено число, меняем его знак
-        if (lastIndex != -1) {
-            val lastNumber = currentText.substring(lastIndex)
-            currentText = currentText.removeRange(lastIndex, currentText.length)
-
-            val newValue = if (currentText.endsWith("-")) {
-                currentText.dropLast(1) + "+" + lastNumber
-            } else if (currentText.endsWith("+")) {
-                currentText.dropLast(1) + "-" + lastNumber
-            }
-//            else if (Regex("[÷×]$").containsMatchIn(currentText)) {
-//                currentText + "-" + lastNumber
-            else return
-
-            binding.operationDisplay.text = newValue
+        var firstDigitIndex = lastIndexOperator + 1
+        while (firstDigitIndex < currentText.length && !currentText[firstDigitIndex].isDigit()) {
+            firstDigitIndex++
         }
+        if (firstDigitIndex >= currentText.length) return
+
+        val lastNumber = currentText.substring(firstDigitIndex)
+        currentText = currentText.substring(0, firstDigitIndex)
+
+        val newValue = when {
+            currentText.endsWith('-') -> currentText.dropLast(1) + '+' + lastNumber
+            currentText.endsWith('+') -> currentText.dropLast(1) + '-' + lastNumber
+            else -> return
+        }
+        binding.operationDisplay.text = newValue
     }
 
     private fun calculateResult() {
